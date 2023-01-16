@@ -17,12 +17,19 @@ module.exports.getElements = async function(url, selectors){
         //get all elements
         const elements = await page.$$(selector)
 
-        //extract all text wanted
-        const arrayText = await Promise.all(elements.map(item => item.evaluate(item => item.innerText)));
+        //extract all text wanted, if theres no text tries to get alt
+        const arrayText = await Promise.all(elements.map(item => item.evaluate(item => item.innerText ? item.innerText : item.alt)));
 
         //add extracted texts to the array 
         texts.push(arrayText);
     }
 
     return texts;
+}
+
+module.exports.getDayWeek = () => {
+    const date = new Date();
+    const day = date.getDay();
+
+    return day;
 }

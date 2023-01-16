@@ -48,18 +48,79 @@ app.get('/tempo/sjp', async (req,res)=> {
     //Css selectors to get the text
     const selectors = [
         "span.dato-temperatura", 
-        "span.descripcion strong"
+        "span.descripcion strong",
+        ".dia:nth-of-type(1)>.temperatura>.maxima",
+        ".dia:nth-of-type(1)>.temperatura>.minima",
+        ".dia:nth-of-type(2)>.prediccion img",
+        ".dia:nth-of-type(2)>.temperatura>.maxima",
+        ".dia:nth-of-type(2)>.temperatura>.minima",
+        ".dia:nth-of-type(3)>.prediccion img",
+        ".dia:nth-of-type(3)>.temperatura>.maxima",
+        ".dia:nth-of-type(3)>.temperatura>.minima",
+        ".dia:nth-of-type(4)>.prediccion img",
+        ".dia:nth-of-type(4)>.temperatura>.maxima",
+        ".dia:nth-of-type(4)>.temperatura>.minima",
+        ".dia:nth-of-type(5)>.prediccion img",
+        ".dia:nth-of-type(5)>.temperatura>.maxima",
+        ".dia:nth-of-type(5)>.temperatura>.minima"
     ]
 
     const texts = await utils.getElements(url, selectors);
 
+    const daysWeek = ['Domingo', 'Segunda', "Terça", "Quarta", 'Quinta', 'Sexta', 'Sábado'];
+    const currentDay = utils.getDayWeek();
+
     const temperature = texts[0];
     const desc = texts[1];
+    const tempMax = texts[2];
+    const tempMin = texts[3];
+
+    const descDay2 = texts[4];
+    const tempMaxDay2 = texts[5];
+    const tempMinDay2 = texts[6];
+
+    const nameDay3 = daysWeek[currentDay+2%6]
+    const descDay3 = texts[7];
+    const tempMaxDay3 = texts[8];
+    const tempMinDay3 = texts[9];
+
+    const nameDay4 = daysWeek[currentDay+3%6]
+    const descDay4 = texts[10];
+    const tempMaxDay4 = texts[11];
+    const tempMinDay4 = texts[12];
+
+    const nameDay5 = daysWeek[currentDay+4%6]
+    const descDay5 = texts[13];
+    const tempMaxDay5 = texts[14];
+    const tempMinDay5 = texts[15];
 
     const html = `<h1>Temperatura de SJP</h1>
+    <h2>Hoje</h2>
     <p>${temperature}</p>
 
+    <span>${tempMax} - ${tempMin}</span>
+
     <p>${desc}</p>
+
+    <h2>Amanhã</h2>
+    <span>${tempMaxDay2} - ${tempMinDay2}</span>
+
+    <p>${descDay2}</p>
+
+    <h2>${nameDay3}</h2>
+    <span>${tempMaxDay3} - ${tempMinDay3}</span>
+
+    <p>${descDay3}</p>
+
+    <h2>${nameDay4}</h2>
+    <span>${tempMaxDay4} - ${tempMinDay4}</span>
+
+    <p>${descDay4}</p>
+
+    <h2>${nameDay5}</h2>
+    <span>${tempMaxDay5} - ${tempMinDay5}</span>
+
+    <p>${descDay5}</p>
     `
 
     res.send(html);
