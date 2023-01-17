@@ -8,7 +8,7 @@ const port = 3500;
 
 
 //Gives the Megasena results
-app.get('/megasena', async (req,res)=> {
+app.get('/api/megasena', async (req,res)=> {
     const url = "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx";
     //Css selectors to get the text
     const selectors = 
@@ -30,7 +30,7 @@ app.get('/megasena', async (req,res)=> {
     const nextPrize = texts[3];
     const scoredSix = texts[4];
     const scoredFive = texts[5];
-    const scoredFour = texts[4];
+    const scoredFour = texts[6];
 
     const html = `<h1>${date}</h1>
     <p>${numbers}</p>
@@ -43,8 +43,9 @@ app.get('/megasena', async (req,res)=> {
 });
 
 //Weather
-app.get('/tempo/sjp', async (req,res)=> {
-    const url = "https://www.tempo.com/sao-jose-dos-pinhais.htm";
+app.get('/api/tempo/:local', async (req,res)=> {
+    const {local} = req.params;
+    const url = "https://www.tempo.com/"+local+".htm";
     //Css selectors to get the text
     const selectors = [
         "span.dato-temperatura", 
@@ -94,7 +95,7 @@ app.get('/tempo/sjp', async (req,res)=> {
     const tempMaxDay5 = texts[14];
     const tempMinDay5 = texts[15];
 
-    const html = `<h1>Temperatura de SJP</h1>
+    const html = `<h1>Temperatura de ${local}</h1>
     <h2>Hoje</h2>
     <p>${temperature}</p>
 
@@ -121,6 +122,84 @@ app.get('/tempo/sjp', async (req,res)=> {
     <span>${tempMaxDay5} - ${tempMinDay5}</span>
 
     <p>${descDay5}</p>
+    `
+
+    res.send(html);
+});
+
+app.get('/api/cotacao', async (req,res)=>{
+    const url = 'https://economia.uol.com.br/cotacoes/';
+    
+    const selectors = [
+        'div[name="grafico"] .hidden-xs a.subtituloGrafico.subtituloGraficoValor',
+        'div[name="graficoEuro"] .hidden-xs a.subtituloGrafico.subtituloGraficoValor'
+    ]
+
+    const texts = await utils.getElements(url,selectors);
+
+    const dolar = texts[0];
+    const euro = texts[1];
+
+    const html = `
+    <h1>Cotação</h1>
+    <h2>Dolar: ${dolar}</h2>
+    <h2>Euro: ${euro}</h2>
+    `
+
+    res.send(html)
+
+})
+
+app.get('/api/horoscopo', async (req,res) => {
+    const url = "https://www.oguru.com.br/horoscopododia";
+
+    const selectors = [
+        '.container .row:nth-of-type(2) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(2) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(3) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(3) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(4) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(4) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(5) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(5) .col-md-6:nth-of-type(3) p:nth-of-type(1)',
+        '.container .row:nth-of-type(6) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(6) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(7) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(7) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+    ]
+
+    const texts = await utils.getElements(url,selectors)
+
+    const aries = texts[0];
+    const touro = texts[1];
+    const gemeos = texts[2];
+    const cancer = texts[3];
+    const leao = texts[4];
+    const virgem = texts[5];
+
+    const libra = texts[6];
+    const escorpiao = texts[7];
+    const sagitario = texts[8];
+    const capricornio = texts[9];
+    const aquario = texts[10];
+    const peixes = texts[11];
+
+    const html = `
+        <h1>SIGNOS</h1>
+
+        <div><h2>Aries:</h2> ${aries}</div><br>
+        <div><h2>Touro:</h2> ${touro}</div><br>
+        <div><h2>Gemêos:</h2> ${gemeos}</div><br>
+        <div><h2>Câncer:</h2> ${cancer}</div><br>
+        <div><h2>Leão:</h2> ${leao}</div><br>
+        <div><h2>Virgem:</h2> ${virgem}</div><br>
+
+        <div><h2>Libra:</h2> ${libra}</div><br>
+        <div><h2>Escorpião:</h2> ${escorpiao}</div><br>
+        <div><h2>Sagitário:</h2> ${sagitario}</div><br>
+        <div><h2>Capricornio:</h2> ${capricornio}</div><br>
+        <div><h2>Aquário:</h2> ${aquario}</div><br>
+        <div><h2>Peixes:</h2> ${peixes}</div><br>
     `
 
     res.send(html);
