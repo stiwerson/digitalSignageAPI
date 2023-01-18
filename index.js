@@ -1,4 +1,5 @@
 //Packages to import
+const cron = require('node-cron');
 const express = require('express');
 const utils = require('./utils.js');
 
@@ -207,4 +208,8 @@ app.get('/api/horoscopo', async (req,res) => {
 
 app.listen(port, ()=> {
     console.log(`Connected to port ${port}`);
+});
+
+cron.schedule('0 * * * *', async () =>{
+    
 });

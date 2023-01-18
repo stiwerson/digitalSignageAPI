@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
+const fs = require('fs');
 
-module.exports.getElements = async function(url, selectors){
+const getElements = async function(url, selectors){
     const texts = [];
     //Start Browser
     const browser = await puppeteer.launch();
@@ -25,6 +26,38 @@ module.exports.getElements = async function(url, selectors){
     }
 
     return texts;
+}
+
+module.exports.genMegasena = async () =>{
+    //Url to get
+    const url = "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx";
+    //Css selectors to get the text
+    const selectors = 
+    [
+        '.numbers.megasena>li', 
+        'h2>span.ng-binding', 
+        'div.next-prize.clearfix>p:first-child', 
+        'div.next-prize.clearfix>.value', 
+        '.content-section.with-box.column-right .description:nth-of-type(1)>span:nth-of-type(3)', 
+        '.content-section.with-box.column-right .description:nth-of-type(2)>span:nth-of-type(1)',
+        '.content-section.with-box.column-right .description:nth-of-type(3)>span:nth-of-type(1)'
+    ];
+
+    const texts = await utils.getElements(url, selectors);
+
+    const megasenaResults = {
+        numbers:  texts[0],
+        date:  texts[1],
+        nextDate:  texts[2],
+        nextPrize:  texts[3],
+        scoredSix:  texts[4],
+        scoredFive:  texts[5],
+        scoredFour:  texts[6]
+    }
+    
+    const json = JSON.stringify(megasenaResults);
+
+
 }
 
 module.exports.getDayWeek = () => {
