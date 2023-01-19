@@ -10,37 +10,11 @@ const port = 3500;
 
 //Gives the Megasena results
 app.get('/api/megasena', async (req,res)=> {
-    const url = "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx";
-    //Css selectors to get the text
-    const selectors = 
-    [
-        '.numbers.megasena>li', 
-        'h2>span.ng-binding', 
-        'div.next-prize.clearfix>p:first-child', 
-        'div.next-prize.clearfix>.value', 
-        '.content-section.with-box.column-right .description:nth-of-type(1)>span:nth-of-type(3)', 
-        '.content-section.with-box.column-right .description:nth-of-type(2)>span:nth-of-type(1)',
-        '.content-section.with-box.column-right .description:nth-of-type(3)>span:nth-of-type(1)'
-    ];
+    //Get data saved
+    const json = utils.getJSON(megasena);
 
-    const texts = await utils.getElements(url, selectors);
-
-    const numbers = texts[0];
-    const date = texts[1];
-    const nextDate = texts[2];
-    const nextPrize = texts[3];
-    const scoredSix = texts[4];
-    const scoredFive = texts[5];
-    const scoredFour = texts[6];
-
-    const html = `<h1>${date}</h1>
-    <p>${numbers}</p>
-    <div><span>${nextDate} </span><span>${nextPrize}</span></div>
-    <p>6 Acertos ${scoredSix}</p>
-    <p>5 Acertos ${scoredFive}</p>
-    <p>4 Acertos ${scoredFour}</p>`
-
-    res.send(html);
+    //Set to client
+    res.send(json);
 });
 
 //Weather

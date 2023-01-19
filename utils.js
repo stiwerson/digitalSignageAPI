@@ -1,6 +1,8 @@
 const puppeteer = require("puppeteer");
 const fs = require('fs');
+const { METHODS } = require("http");
 
+//Get all texts from URL using selectors
 const getElements = async function(url, selectors){
     const texts = [];
     //Start Browser
@@ -28,6 +30,14 @@ const getElements = async function(url, selectors){
     return texts;
 }
 
+//Used to get current day
+module.exports.getDayWeek = () => {
+    const date = new Date();
+    const day = date.getDay();
+
+    return day;
+}
+
 //Saves all scrapped info to a json
 function saveJSON(obj, fileName){
     const json = JSON.stringify(obj);
@@ -36,9 +46,20 @@ function saveJSON(obj, fileName){
         if (err){
             throw err
         }
-    })
+    });
 }
 
+//Get saved JSON
+module.exports.getJSON = (filename) =>{
+    fs.readFile(`./public/${filename}.json`, 'utf-8', (err, data)=>{
+        if(err){
+            throw err;
+        }
+        return data;
+    });
+}
+
+//Get Megasena winning numbers, amount of winners and prize
 module.exports.getMegasena = async () =>{
     //Url to get
     const url = "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx";
@@ -66,12 +87,9 @@ module.exports.getMegasena = async () =>{
         scoredFour:  texts[6]
     }
 
-    saveJSON(megasenaResults);
+    saveJSON(megasenaResults, 'megasena');
 }
 
-module.exports.getDayWeek = () => {
-    const date = new Date();
-    const day = date.getDay();
+module.exports.getWeather = async () => {
 
-    return day;
 }
