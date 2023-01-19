@@ -28,7 +28,18 @@ const getElements = async function(url, selectors){
     return texts;
 }
 
-module.exports.genMegasena = async () =>{
+//Saves all scrapped info to a json
+function saveJSON(obj, fileName){
+    const json = JSON.stringify(obj);
+
+    fs.writeFile(`./public/${filename}.json`, json, (err) => {
+        if (err){
+            throw err
+        }
+    })
+}
+
+module.exports.getMegasena = async () =>{
     //Url to get
     const url = "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx";
     //Css selectors to get the text
@@ -43,7 +54,7 @@ module.exports.genMegasena = async () =>{
         '.content-section.with-box.column-right .description:nth-of-type(3)>span:nth-of-type(1)'
     ];
 
-    const texts = await utils.getElements(url, selectors);
+    const texts = await getElements(url, selectors);
 
     const megasenaResults = {
         numbers:  texts[0],
@@ -54,10 +65,8 @@ module.exports.genMegasena = async () =>{
         scoredFive:  texts[5],
         scoredFour:  texts[6]
     }
-    
-    const json = JSON.stringify(megasenaResults);
 
-
+    saveJSON(megasenaResults);
 }
 
 module.exports.getDayWeek = () => {
