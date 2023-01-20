@@ -31,7 +31,7 @@ const getElements = async function(url, selectors){
 }
 
 //Used to get current day
-module.exports.getDayWeek = () => {
+function getDayWeek (){
     const date = new Date();
     const day = date.getDay();
 
@@ -45,6 +45,8 @@ function saveJSON(obj, fileName){
     fs.writeFile(`./public/${filename}.json`, json, (err) => {
         if (err){
             throw err
+        }else{
+            console.log(`${filename}.json has been updated.`);
         }
     });
 }
@@ -61,6 +63,7 @@ module.exports.getJSON = (filename) =>{
 
 //Get Megasena winning numbers, amount of winners and prize
 module.exports.getMegasena = async () =>{
+    console.log("Updating Megasena results...");
     //Url to get
     const url = "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx";
     //Css selectors to get the text
@@ -90,6 +93,121 @@ module.exports.getMegasena = async () =>{
     saveJSON(megasenaResults, 'megasena');
 }
 
-module.exports.getWeather = async () => {
+//Get the weather
+module.exports.getWeather = async (local) => {
+    console.log(`Updating the "${local}" weather file`);
+    const url = "https://www.tempo.com/"+local+".htm";
+    //Css selectors to get the text
+    const selectors = [
+        "span.dato-temperatura", 
+        "span.descripcion strong",
+        ".dia:nth-of-type(1)>.temperatura>.maxima",
+        ".dia:nth-of-type(1)>.temperatura>.minima",
+        ".dia:nth-of-type(2)>.prediccion img",
+        ".dia:nth-of-type(2)>.temperatura>.maxima",
+        ".dia:nth-of-type(2)>.temperatura>.minima",
+        ".dia:nth-of-type(3)>.prediccion img",
+        ".dia:nth-of-type(3)>.temperatura>.maxima",
+        ".dia:nth-of-type(3)>.temperatura>.minima",
+        ".dia:nth-of-type(4)>.prediccion img",
+        ".dia:nth-of-type(4)>.temperatura>.maxima",
+        ".dia:nth-of-type(4)>.temperatura>.minima",
+        ".dia:nth-of-type(5)>.prediccion img",
+        ".dia:nth-of-type(5)>.temperatura>.maxima",
+        ".dia:nth-of-type(5)>.temperatura>.minima"
+    ]
 
+    const texts = await getElements(url, selectors);
+
+    const daysWeek = ['Domingo', 'Segunda', "Terça", "Quarta", 'Quinta', 'Sexta', 'Sábado'];
+    const currentDay = getDayWeek();
+
+    const weather = {
+        temperature: texts[0],
+        desc: texts[1],
+        tempMax: texts[2],
+        tempMin: texts[3],
+    
+        descDay2: texts[4],
+        tempMaxDay2: texts[5],
+        tempMinDay2: texts[6],
+    
+        nameDay3: daysWeek[currentDay+2%6],
+        descDay3: texts[7],
+        tempMaxDay3: texts[8],
+        tempMinDay3: texts[9],
+    
+        nameDay4: daysWeek[currentDay+3%6],
+        descDay4: texts[10],
+        tempMaxDay4: texts[11],
+        tempMinDay4: texts[12],
+    
+        nameDay5: daysWeek[currentDay+4%6],
+        descDay5: texts[13],
+        tempMaxDay5: texts[14],
+        tempMinDay5: texts[15]
+    }
+
+    saveJSON(weather, local);
+}
+
+//Get the horoscope
+module.exports.getHoroscope = async () =>{
+    console.log("Updating the horoscope");
+
+    const url = "https://www.oguru.com.br/horoscopododia";
+
+    const selectors = [
+        '.container .row:nth-of-type(2) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(2) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(3) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(3) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(4) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(4) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(5) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(5) .col-md-6:nth-of-type(3) p:nth-of-type(1)',
+        '.container .row:nth-of-type(6) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(6) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+        '.container .row:nth-of-type(7) .col-md-6:nth-of-type(1) p:nth-of-type(1)',
+        '.container .row:nth-of-type(7) .col-md-6:nth-of-type(2) p:nth-of-type(1)',
+    ]
+
+    const texts = await getElements(url,selectors)
+
+    const horoscope = {
+        aries: texts[0],
+        touro: texts[1],
+        gemeos: texts[2],
+        cancer: texts[3],
+        leao: texts[4],
+        virgem: texts[5],    
+        libra: texts[6],
+        escorpiao: texts[7],
+        sagitario: texts[8],
+        capricornio: texts[9],
+        aquario: texts[10],
+        peixes: texts[11]
+    }
+
+    saveJSON(horoscope, 'horoscope');
+}
+
+module.exports.getCurrency = async () => {
+    console.log("Updating the Dolar and Euro currency");
+
+    const url = 'https://economia.uol.com.br/cotacoes/';
+    
+    const selectors = [
+        'div[name="grafico"] .hidden-xs a.subtituloGrafico.subtituloGraficoValor',
+        'div[name="graficoEuro"] .hidden-xs a.subtituloGrafico.subtituloGraficoValor'
+    ]
+
+    const texts = await getElements(url,selectors);
+
+    const currency = {
+        dolar: texts[0],
+        euro: texts[1]
+    }
+
+    saveJSON(currency, 'currency');
 }
