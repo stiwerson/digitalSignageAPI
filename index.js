@@ -27,7 +27,7 @@ app.get('/api/tempo/:local', async (req,res)=> {
 });
 
 app.get('/api/cotacao', async (req,res)=>{
-    const json = await utils.getJSON('currency')
+    const json = await utils.getJSON('currency');
 
     res.send(json)
 })
@@ -39,7 +39,7 @@ app.get('/api/horoscopo', async (req,res) => {
 });
 
 app.listen(port, ()=> {
-    console.log(`Server is now running on the port: ${port}`);
+    console.log(`Server is now running. The port is ${port}`);
 });
 
 cron.schedule('0 * * * *', async () =>{
@@ -54,6 +54,7 @@ async function jsonUpdate(){
     //all location to get the weather
     const cities = ['sao-jose-dos-pinhais','quatro-barras','carambei','coronel-vivida','paranagua','pinhais'];
 
+    //loop to get all weathers from the cities array
     for(let city of cities){
         await utils.getWeather(city)
     }

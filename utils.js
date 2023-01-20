@@ -2,32 +2,44 @@ const puppeteer = require("puppeteer");
 const fs = require('fs');
 const { METHODS } = require("http");
 
+//Number of tries if timeout
+const maxTries = 3;
+
 //Get all texts from URL using selectors
 const getElements = async function(url, selectors){
     const texts = [];
-    //Start Browser
-    const browser = await puppeteer.launch();
-    //Open new tab
-    const page = await browser.newPage();
-    //Go to location selected on param
-    await page.goto(url);
 
-    //Get every element
-    for(let selector of selectors){   
-        //Wait for html elements to load
-        await page.waitForSelector(selector); 
+    //Loop used in case of timeout or unexpected errors
+    for(let tries = 0; tries < maxTries; tries++){
+        try{
+            //Start Browser
+            const browser = await puppeteer.launch();
+            //Open new tab
+            const page = await browser.newPage();
+            //Go to location selected on param
+            await page.goto(url);
 
-        //get all elements
-        const elements = await page.$$(selector)
+            //Get every element
+            for(let selector of selectors){   
+                //Wait for html elements to load
+                await page.waitForSelector(selector); 
 
-        //extract all text wanted, if theres no text tries to get alt
-        const arrayText = await Promise.all(elements.map(item => item.evaluate(item => item.innerText ? item.innerText : item.alt)));
+                //get all elements
+                const elements = await page.$$(selector)
 
-        //add extracted texts to the array 
-        texts.push(arrayText);
+                //extract all text wanted, if theres no text tries to get alt
+                const arrayText = await Promise.all(elements.map(item => item.evaluate(item => item.innerText ? item.innerText : item.alt)));
+
+                //add extracted texts to the array 
+                texts.push(arrayText);
+            }
+
+            return texts;
+        }catch(error){
+            console.error(`ERROR:\n ${error}.\n Retrying.\n (Number of tries ${tries+1}/${maxTries})`);
+        }
     }
-
-    return texts;
+    console.error(`Failed after ${maxTries} tries.`);
 }
 
 //Used to get current day
@@ -39,16 +51,25 @@ function getDayWeek (){
 }
 
 //Saves all scrapped info to a json
-function saveJSON(obj, fileName){
+function saveJSON(obj, filename){
     const json = JSON.stringify(obj);
 
-    fs.writeFile(`./public/${filename}.json`, json, (err) => {
-        if (err){
-            throw err
-        }else{
-            console.log(`${filename}.json has been updated.`);
+    for(let tries = 0; tries < maxTries; tries++){
+        try{
+            fs.writeFile(`./public/${filename}.json`, json, (err) => {
+                if (err){
+                    throw err
+                }else{
+                    console.log(`${filename}.json has been updated.`);
+
+                    //Used to break the loop, Couldn't use the break statement in here
+                    tries = maxTries;
+                }
+            });
+        }catch(error){
+            console.error(`ERROR:\n ${error}.\n Retrying.\n (Number of tries ${tries+1}/${maxTries})`);
         }
-    });
+    }
 }
 
 //Get saved JSON
