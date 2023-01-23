@@ -56,6 +56,6 @@ async function jsonUpdate(){
 
     //loop to get all weathers from the cities array
     for(let city of cities){
-        await utils.getWeather(city)
+        await utils.getWeather(city);
     }
 }

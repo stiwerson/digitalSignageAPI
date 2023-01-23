@@ -61,11 +61,9 @@ function saveJSON(obj, filename){
                     throw err
                 }else{
                     console.log(`${filename}.json has been updated.`);
-
-                    //Used to break the loop, Couldn't use the break statement in here
-                    tries = maxTries;
                 }
             });
+            break;
         }catch(error){
             console.error(`ERROR:\n ${error}.\n Retrying.\n (Number of tries ${tries+1}/${maxTries})`);
         }
