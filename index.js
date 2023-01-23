@@ -7,6 +7,15 @@ const utils = require('./utils.js');
 const app = express();
 const port = 3500;
 
+//Header for client request
+app.use(function(req,res,next){
+    res.setHeader("Content-Security-Policy", "default-src *");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Content-Type", "application/json");
+    next();
+});
+
 //Gives the Megasena results
 app.get('/api/megasena', async (req,res)=> {
     //Get data saved
@@ -23,9 +32,7 @@ app.get('/api/tempo/:local', async (req,res)=> {
 
     const json = await utils.getJSON(local);
 
-    console.log(json);
-
-    res.send(json);
+    res.json(json);
 });
 
 app.get('/api/cotacao', async (req,res)=>{
