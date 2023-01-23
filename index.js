@@ -23,6 +23,8 @@ app.get('/api/tempo/:local', async (req,res)=> {
 
     const json = await utils.getJSON(local);
 
+    console.log(json);
+
     res.send(json);
 });
 

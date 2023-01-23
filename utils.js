@@ -72,12 +72,13 @@ function saveJSON(obj, filename){
 
 //Get saved JSON
 module.exports.getJSON = (filename) =>{
-    fs.readFile(`./public/${filename}.json`, 'utf-8', (err, data)=>{
-        if(err){
-            throw err;
-        }
-        return data;
-    });
+    return new Promise((resolve,reject) => {
+        fs.readFile(`./public/${filename}.json`, 'utf-8', (err, data)=>{
+            if(err){
+                throw err;
+            }
+            resolve(JSON.parse(data));
+    });})
 }
 
 //Get Megasena winning numbers, amount of winners and prize
@@ -114,7 +115,7 @@ module.exports.getMegasena = async () =>{
 
 //Get the weather
 module.exports.getWeather = async (local) => {
-    console.log(`Updating the "${local}" weather file`);
+    console.log(`Updating the "${local}" weather file...`);
     const url = "https://www.tempo.com/"+local+".htm";
     //Css selectors to get the text
     const selectors = [
@@ -172,7 +173,7 @@ module.exports.getWeather = async (local) => {
 
 //Get the horoscope
 module.exports.getHoroscope = async () =>{
-    console.log("Updating the horoscope");
+    console.log("Updating the horoscope...");
 
     const url = "https://www.oguru.com.br/horoscopododia";
 
@@ -212,7 +213,7 @@ module.exports.getHoroscope = async () =>{
 }
 
 module.exports.getCurrency = async () => {
-    console.log("Updating the Dolar and Euro currency");
+    console.log("Updating the Dolar and Euro currency...");
 
     const url = 'https://economia.uol.com.br/cotacoes/';
     
