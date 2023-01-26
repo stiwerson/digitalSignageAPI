@@ -74,12 +74,12 @@ function saveJSON(obj, filename){
 module.exports.getJSON = (filename) =>{
     return new Promise((resolve,reject) => {
         fs.readFile(`./public/${filename}.json`, 'utf-8', (err, data)=>{
+            //If data not found returns a error on console log
             if(data){
                 resolve(JSON.parse(data));
             }else{
-                console.log("Error! "+err);
+                console.log("Error! " + err);
             }
-
         });
     })
 }
