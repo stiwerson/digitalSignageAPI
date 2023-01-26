@@ -74,11 +74,14 @@ function saveJSON(obj, filename){
 module.exports.getJSON = (filename) =>{
     return new Promise((resolve,reject) => {
         fs.readFile(`./public/${filename}.json`, 'utf-8', (err, data)=>{
-            if(err){
-                throw err;
+            if(data){
+                resolve(JSON.parse(data));
+            }else{
+                console.log("Error! "+err);
             }
-            resolve(JSON.parse(data));
-    });})
+
+        });
+    })
 }
 
 //Get Megasena winning numbers, amount of winners and prize
