@@ -12,26 +12,48 @@ const getElements = async function(url, selectors){
     //Loop used in case of timeout or unexpected errors
     for(let tries = 0; tries < maxTries; tries++){
         try{
+            console.log("Starting the work!");
             //Start Browser
-            const browser = await puppeteer.launch();
+            const browser = await puppeteer.launch({ args: [
+                '--disable-gpu',
+                '--disable-setuid-sandbox',
+                '--no-sandbox',
+                '--no-zygote'
+                ]});
+
+            console.log("Browser started");
+
             //Open new tab
             const page = await browser.newPage();
+
+            console.log("Opened a new TAB!");
+
             //Go to location selected on param
             await page.goto(url);
+
+            console.log("Going to the URL");
 
             //Get every element
             for(let selector of selectors){   
                 //Wait for html elements to load
                 await page.waitForSelector(selector); 
 
+                console.log("Waiting for the selector");
+
                 //get all elements
                 const elements = await page.$$(selector)
+
+                console.log("Getting all the elements");
 
                 //extract all text wanted, if theres no text tries to get alt
                 const arrayText = await Promise.all(elements.map(item => item.evaluate(item => item.innerText ? item.innerText : item.alt)));
 
+                console.log("Finished getting the elements");
+
                 //add extracted texts to the array 
                 texts.push(arrayText);
+
+                console.log("Sended the text to a Array");
             }
 
             return texts;
